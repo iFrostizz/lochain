@@ -1,6 +1,7 @@
 import { URL } from 'url';
 import { Lochain } from './lochain';
 import { SemVer } from 'semver';
+import { Wallet } from 'ethers';
 
 export class AnvilParser {
   output: string
@@ -12,8 +13,9 @@ export class AnvilParser {
   parse_anvil(): Lochain {
     const version: SemVer = this.parse_version();
     const url: URL = this.parse_url();
+    const wallets: Wallet[] = this.parse_keys();
 
-    return new Lochain(version, url);
+    return new Lochain(version, url, wallets);
   }
 
   parse_version(): SemVer {
@@ -30,6 +32,26 @@ export class AnvilParser {
     const url: URL = new URL(sub);
 
     return url;
+  }
+
+  parse_keys(): Wallet[] {
+    const min = "Private Keys";
+    const max = "Wallet";
+
+    const output = this.output;
+    const substring = output.substring(output.indexOf(min) + min.length, output.indexOf(max));
+
+    let keys = substring.split(')');
+    keys.shift();
+
+    let private_keys: Wallet[] = [];
+
+    for (const key of keys) {
+      const pkey = key.substring(1, key.indexOf('\n'));
+      private_keys.push(new Wallet(pkey));
+    }
+
+    return private_keys;
   }
 }
 

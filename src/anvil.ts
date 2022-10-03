@@ -33,8 +33,6 @@ fs.readFile('src/data/anvil_output.txt', 'utf8', (err: any, data: any) => {
     process.exit();
   }
 
-  console.log(data);
-
   let parser: AnvilParser = new AnvilParser(data);
 
   parser.parse_anvil();
