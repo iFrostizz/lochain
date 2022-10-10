@@ -1,8 +1,7 @@
-import * as fs from 'fs';
-import { spawn, exec } from 'child_process';
+import { spawn } from 'child_process';
 import { AnvilParser } from './parser';
+import { Lochain } from './lochain';
 
-// TODO: wouldn't work on Windows
 /*exec("ps aux | grep 'anvil' | grep -v grep",
   function (error: any, stdout: any, stderr: any) {
     console.log('stdout: ' + stdout);
@@ -11,23 +10,38 @@ import { AnvilParser } from './parser';
     }
 });*/
 
-/*const anvil_cmd = spawn('anvil');
+// spawn('sh', ['./kill.sh']);
+export const startAnvil = (): Promise<Lochain | any> => {
+  const anvil_cmd = spawn('anvil');
 
-anvil_cmd.stdout.on('data', (data: any) => {
-  // console.log(data);
+  let lochain = new Promise((res, rej) => {
+    anvil_cmd.stdout.on('data', (data: any) => {
+      console.log("Anvil started !");
 
-  // const data = Buffer.toString(data);
+      const decoded = String(data);
+      console.log(decoded);
 
-  const decoded = String(data);
+      let parser: AnvilParser = new AnvilParser(decoded);
 
-  console.log(decoded);
-})
+      let lochain: Lochain = parser.parse_anvil();
 
-anvil_cmd.stdout.on('error', () => {
-  console.log("err");
-})*/
+      res(lochain);
+    })
 
-fs.readFile('src/data/anvil_output.txt', 'utf8', (err: any, data: any) => {
+    anvil_cmd.on('close', (data: any) => {
+      console.log('close', data);
+      spawn('sh', ['./kill.sh']);
+
+      rej(data);
+    }
+
+    );
+  });
+
+  return lochain;
+}
+
+/*fs.readFile('src/data/anvil_output.txt', 'utf8', (err: any, data: any) => {
   if (err) {
     console.error(err);
     process.exit();
@@ -36,4 +50,4 @@ fs.readFile('src/data/anvil_output.txt', 'utf8', (err: any, data: any) => {
   let parser: AnvilParser = new AnvilParser(data);
 
   parser.parse_anvil();
-});
+});*/

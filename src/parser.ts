@@ -28,7 +28,7 @@ export class AnvilParser {
 
     const list = "Listening on ";
     let sub = output.substring(output.indexOf(list) + list.length);
-    sub = "https://" + sub;
+    sub = "http://" + sub;
     const url: URL = new URL(sub);
 
     return url;
