@@ -1,4 +1,4 @@
-import { URL } from 'url';
+import Url from 'url-parse';
 import { Lochain } from './lochain';
 import { SemVer } from 'semver';
 import { Wallet } from 'ethers';
@@ -21,7 +21,7 @@ export class AnvilParser {
         const list = "Listening on ";
         let sub = output.substring(output.indexOf(list) + list.length);
         sub = "http://" + sub;
-        const url = new URL(sub);
+        const url = new Url(sub);
         return url;
     }
     parse_keys() {

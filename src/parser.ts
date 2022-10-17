@@ -1,4 +1,4 @@
-import { URL } from 'url';
+import Url from 'url-parse';
 import { Lochain } from './lochain';
 import { SemVer } from 'semver';
 import { Wallet } from 'ethers';
@@ -12,7 +12,7 @@ export class AnvilParser {
 
   parse_anvil(): Lochain {
     const version: SemVer = this.parse_version();
-    const url: URL = this.parse_url();
+    const url: Url<string> = this.parse_url();
     const wallets: Wallet[] = this.parse_keys();
 
     return new Lochain(version, url, wallets);
@@ -23,13 +23,13 @@ export class AnvilParser {
     return new SemVer("0.1.0");
   }
 
-  parse_url(): URL {
+  parse_url(): Url<string> {
     let output = this.output;
 
     const list = "Listening on ";
     let sub = output.substring(output.indexOf(list) + list.length);
     sub = "http://" + sub;
-    const url: URL = new URL(sub);
+    const url: Url<string> = new Url(sub);
 
     return url;
   }
